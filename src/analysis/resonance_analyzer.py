@@ -27,7 +27,7 @@ class ResonanceAnalyzer:
         self.analysis_log = []
 
     def analyze_connectome_harmonics(self, adjacency, signal=None, normalized=True, n_modes=None, symmetrize=False):
-        \"\"\"Compute graph harmonics for a weighted connectome.\"\"\"
+        """Compute graph harmonics for a weighted connectome."""
         analysis = compute_connectome_harmonics(
             adjacency, signal=signal, normalized=normalized,
             n_modes=n_modes, symmetrize=symmetrize
