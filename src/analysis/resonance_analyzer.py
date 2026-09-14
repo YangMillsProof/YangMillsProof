@@ -8,6 +8,11 @@ import json
 from datetime import datetime, timedelta
 from scipy import stats, signal
 
+try:
+    from .graph_harmonics import analyze_connectome_harmonics as compute_connectome_harmonics
+except ImportError:
+    from graph_harmonics import analyze_connectome_harmonics as compute_connectome_harmonics
+
 PHI = 1.6180339887498948482
 
 
@@ -20,6 +25,19 @@ class ResonanceAnalyzer:
     def __init__(self):
         self.results = {}
         self.analysis_log = []
+
+    def analyze_connectome_harmonics(self, adjacency, signal=None, normalized=True, n_modes=None, symmetrize=False):
+        \"\"\"Compute graph harmonics for a weighted connectome.\"\"\"
+        analysis = compute_connectome_harmonics(
+            adjacency, signal=signal, normalized=normalized,
+            n_modes=n_modes, symmetrize=symmetrize
+        )
+        self.results["connectome_harmonics"] = analysis
+        self.analysis_log.append(
+            f"Connectome harmonic analysis: {len(analysis['eigenvalues'])} modes, "
+            f"{analysis['zero_mode_count']} zero modes"
+        )
+        return analysis
 
     def load_observatory_data(self, observatory_client):
         """
@@ -38,9 +56,12 @@ class ResonanceAnalyzer:
 
     def validate_mass_gap(self, coherence_data=None):
         """
-        Validate mass gap Delta = 1/Phi against experimental coherence data.
+        Compare coherence values with the Phi threshold.
 
-        Returns statistical validation report.
+        This is not a Laplacian spectral-gap validation. Use
+        analyze_connectome_harmonics and inspect algebraic_connectivity.
+
+        Returns a coherence report with spectral_validation_required.
         """
         if coherence_data is None:
             if hasattr(self, "history_data") and "coherence_values" in self.history_data:
