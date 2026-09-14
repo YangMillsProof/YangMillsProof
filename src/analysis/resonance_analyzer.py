@@ -114,8 +114,10 @@ class ResonanceAnalyzer:
         else:
             theory_holds = analysis["violation_count"] == 0
 
-        analysis["theory_experiment_match"] = theory_holds
-        analysis["mass_gap_validated"] = theory_holds
+        analysis["coherence_threshold_match"] = theory_holds
+        analysis["spectral_validation_required"] = True
+        analysis["theory_experiment_match"] = False
+        analysis["mass_gap_validated"] = False
 
         self.results["mass_gap_validation"] = analysis
         self.analysis_log.append(f"Mass gap analysis: {theory_holds}")
